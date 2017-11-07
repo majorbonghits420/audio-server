@@ -23,5 +23,3 @@ void AudioServer::routePath(const std::string &internalPath) {
     // If all else fails, take to login page
   }
 }
-
-int main(int argc, char **argv) {}

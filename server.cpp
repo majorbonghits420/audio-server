@@ -4,19 +4,7 @@
  * Description: This class is meant to be the application class for the web application.
  */
 
-#include <stdlib.h>
-#include <string>
-#include <Wt/WApplication>
-
-class AudioServer : public Wt::WApplication {
-
-public:
-  AudioServer(const Wt::WEnvironment &env);
-
-  void routePath(const std::string &interalPath);
-
-  static void playVideo(std::string url);
-};
+#include "server.hpp"
 
 void AudioServer::playVideo(std::string url) {
   system(("cvlc -Vdummy " + url).c_str());

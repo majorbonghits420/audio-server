@@ -32,9 +32,13 @@ public:
   void closeDatabase(void);
 
 private:
+  const int MAX_STATEMENT_SIZE = 500;
   sqlite3* database;
   std::mt19937 rng;
   void createDb(std::string filename);
+  std::string computeHash(std::string toHash);
+
+  // Values that auth callback function sets
 };
 
 #endif /* __DB_HPP__ */

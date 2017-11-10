@@ -1,5 +1,19 @@
 #include "db.hpp"
 
+std::string Db::computeHash(std::string toHash) {
+  CryptoPP::SHA256 hash;
+  byte digest[CryptoPP::SHA256::DIGESTSIZE];
+  hash.CalculateDigest(digest, (byte*) toHash.c_str(), toHash.length());
+
+  // Convert to Hex string that we can enter as text into db
+  CryptoPP::HexEncoder encoder;
+  std::string hashedPass;
+  encoder.Attach(new CryptoPP::StringSink(hashedPass));
+  encoder.Put(digest, sizeof(digest));
+  encoder.MessageEnd();
+  return hashedPass;
+}
+
 Db::Db(std::string filename)
   : rng(std::chrono::system_clock::now().time_since_epoch().count()){
   int rc;
@@ -56,22 +70,52 @@ int Db::addUser(std::string username, std::string pass) {
   int taste = 0;
   int salt = rng();
   // Generate hash of salt + password
-  CryptoPP::SHA256 hash;
-  byte digest[CryptoPP::SHA256::DIGESTSIZE];
   std::string toHash = std::to_string(salt) + pass;
-  hash.CalculateDigest(digest, (byte*) toHash.c_str(), toHash.length());
-
-  // Convert to Hex string that we can enter as text into db
-  CryptoPP::HexEncoder encoder;
-  std::string hashedPass;
-  encoder.Attach(new CryptoPP::StringSink(hashedPass));
-  encoder.Put(digest, sizeof(digest));
-  encoder.MessageEnd();
-
+  std::string hash = computeHash(toHash);
   // Build query
   std::string query = "INSERT INTO users (uname, salt, hash, taste) VALUES"
-    "('" + username + "', " + std::to_string(salt) + ",'" + hashedPass + "'," +
+    "('" + username + "', " + std::to_string(salt) + ",'" + hash + "'," +
     std::to_string(taste) + ");";
   int rc = sqlite3_exec(database, query.c_str(), nullptr, nullptr, nullptr);
   return rc;  
+}
+
+bool Db::authUser(std::string username, std::string password) {
+
+  // Build our query, we need the salt and hash for the given user
+  std::string query = "SELECT salt, hash FROM users WHERE uname = '"
+    + username + "';";
+  // Prepare our statement
+  sqlite3_stmt *stmt;
+  
+  int rc;
+  rc = sqlite3_prepare_v2(database, query.c_str(), -1, &stmt, nullptr);
+
+  // Something goes wrong print error and fail auth
+  if (rc != SQLITE_OK) {
+    std::cout << sqlite3_errmsg(database) << std::endl;
+    return false;
+  }
+
+  rc = sqlite3_step(stmt);
+  // Something goes wrong just fail the auth
+  if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
+    std::cout << std::string(sqlite3_errmsg(database)) << std::endl;
+    return false;
+  }
+
+  // No user with that name found
+  if (rc == SQLITE_DONE) {
+    return false;
+  }
+
+  int salt = sqlite3_column_int(stmt, 0);
+  const char* retrievedHash = (const char*)sqlite3_column_text(stmt, 1);
+  std::cout << retrievedHash << std::endl;
+
+  std::string toHash = std::to_string(salt) + password;
+  std::string authHash = computeHash(toHash);
+  std::cout << authHash << std::endl;
+
+  return authHash.compare(retrievedHash) == 0;
 }

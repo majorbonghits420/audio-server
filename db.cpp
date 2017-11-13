@@ -119,3 +119,26 @@ bool Db::authUser(std::string username, std::string password) {
 
   return authHash.compare(retrievedHash) == 0;
 }
+
+int Db::getTaste(std::string uname) {
+  // Build our query
+  std::string query = "SELECT taste FROM users WHERE uname = '" + uname + "';'";
+  // Prepare our statement
+  sqlite3_stmt *stmt;
+
+  int rc = sqlite3_prepare_v2(database, query.c_str(), -1, &stmt, nullptr);
+  // Something goes wrong just return a very negative number
+  if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
+    std::cout << std::string(sqlite3_errmsg(database)) << std::endl;
+    return -10000;
+  }
+
+  // No user with that name found
+  if (rc == SQLITE_DONE) {
+    return -10000;
+  }
+  int taste = sqlite3_column_int(stmt, 0);
+  return taste;
+}
+
+int Db::updateTaste(std::string, bool vote) {}

@@ -27,7 +27,17 @@ public:
 
   bool authUser(std::string username, std::string password);
 
-  int updateTaste(std::string username, int taste);
+  /**
+   * Updates the taste for the given user depending on a given vote
+   *
+   * @param username - username of taste to update
+   * @param vote - true for an upvote, false for a downvote
+   *
+   * @return int - the return code of the database query
+   */
+  int updateTaste(std::string username, bool vote);
+
+  int getTaste(std::string uname);
 
   void closeDatabase(void);
 

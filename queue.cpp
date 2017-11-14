@@ -1,12 +1,18 @@
 #include "queue.hpp"
 
+Queue::Queue()
+  : db(nullptr)
+{
+  songs = std::vector<Song>();
+}
+
 Queue::Queue(Db *database)
   : db(database) {
   songs = std::vector<Song>();
 }
 
 void Queue::addSong(Song s) {
-  songs.insert(s);
+  songs.insert(songs.end(), s);
   reorder();
 }
 
@@ -31,7 +37,7 @@ void Queue::reorder(void) {
     for (int j = 1; j < songs.size(); j++) {
       int taste = songs[j].getTaste();
       if (taste < minTaste) {
-	minTaste = tastee;
+	minTaste = taste;
 	minIndex = j;
       }
     }

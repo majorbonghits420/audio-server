@@ -1,3 +1,6 @@
+#ifndef __Q_HPP__
+#define __Q_HPP__
+
 #include "db.hpp"
 #include "song.hpp"
 
@@ -5,6 +8,8 @@
 
 class Queue {
 public:
+
+  Queue();
   
   Queue(Db *database);
 
@@ -19,3 +24,5 @@ private:
   void updateTastes(void);
   std::vector<Song> songs;
 };
+
+#endif /* __Q_HPP___*/

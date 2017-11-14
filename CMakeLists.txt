@@ -12,9 +12,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(CryptoPP REQUIRED)
 
-find_package(SQLite3 REQUIRED PATH "/usr/lib")
+find_package(SQLite3)
 
-add_executable(AudioServer main.cpp)
+file(GLOB server_src "*.hpp" "*.cpp")
+
+add_executable(AudioServer ${server_src})
 set_target_properties(AudioServer
   PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/../bin"

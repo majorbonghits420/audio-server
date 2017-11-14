@@ -111,34 +111,57 @@ bool Db::authUser(std::string username, std::string password) {
 
   int salt = sqlite3_column_int(stmt, 0);
   const char* retrievedHash = (const char*)sqlite3_column_text(stmt, 1);
-  std::cout << retrievedHash << std::endl;
 
   std::string toHash = std::to_string(salt) + password;
   std::string authHash = computeHash(toHash);
-  std::cout << authHash << std::endl;
+
+  sqlite3_finalize(stmt);
 
   return authHash.compare(retrievedHash) == 0;
 }
 
 int Db::getTaste(std::string uname) {
   // Build our query
-  std::string query = "SELECT taste FROM users WHERE uname = '" + uname + "';'";
+  std::string query = "SELECT taste FROM users WHERE uname = '" + uname + "';";
+
   // Prepare our statement
   sqlite3_stmt *stmt;
 
   int rc = sqlite3_prepare_v2(database, query.c_str(), -1, &stmt, nullptr);
-  // Something goes wrong just return a very negative number
-  if (rc != SQLITE_ROW && rc != SQLITE_DONE) {
-    std::cout << std::string(sqlite3_errmsg(database)) << std::endl;
-    return -10000;
-  }
 
   // No user with that name found
   if (rc == SQLITE_DONE) {
     return -10000;
   }
+  sqlite3_step(stmt);
   int taste = sqlite3_column_int(stmt, 0);
+
+  sqlite3_finalize(stmt);
   return taste;
 }
 
-int Db::updateTaste(std::string, bool vote) {}
+int Db::updateTaste(std::string uname, bool vote) {
+  // Build our database query
+  std::string op = (vote) ? "+" : "-";
+  std::string query = "UPDATE users set taste = taste " + op + "1 WHERE uname = '" + uname + "';'";
+
+  int rc = sqlite3_exec(database, query.c_str(), nullptr, nullptr, nullptr);
+
+  return rc;
+}
+
+// Tests for Db class
+/*
+int main() {
+  Db db("test.db");
+  db.addUser("james", "password");
+  std::cout << " Initial taste" << db.getTaste("james") << std::endl;
+  std::cout << "Taste of fake user" << db.getTaste("James") << std::endl;
+  db.updateTaste("james", true);
+  std::cout << "Taste should have incremented" <<db.getTaste("james") << std::endl;
+  db.updateTaste("james", true);
+  std::cout<< "Taste should have incremented" << db.getTaste("james") << std::endl;
+  db.updateTaste("james", false);
+  std::cout << "Taste should have decremented" << db.getTaste("james") << std::endl;
+}
+*/

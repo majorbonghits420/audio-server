@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   std::cout << "test" << std::endl;
   Db db("test.db");
   db.addUser("james", "password");
-  db.addUser("brendjaun", "isuck");
+  db.addUser("brendjuan", "isuck");
   db.updateTaste("brendjuan", false);
   db.updateTaste("brendjuan", false);
   db.updateTaste("brendjuan", false);

@@ -12,7 +12,7 @@ class AudioServer {
 
 public:
 
-  AudioServer(std::string dbFilename);
+  AudioServer(Db *db);
 
   static void playVideo(std::string url);
 
@@ -24,7 +24,7 @@ public:
 
   void upvoteCurrentSong(void);
 
-  void downvotCurrentSong(void);
+  void downvoteCurrentSong(void);
 
   void playNext(void);
 
@@ -32,8 +32,15 @@ public:
 
   void addSong(std::string user, std::string url) { q.addSong(Song(url, user)); }
 
+  /**
+   * This starts the server up and does not return until there is nothing in the
+   * song queue. It asssumes that a number of songs has already been added to the
+   * queue.
+   */
+  void run(void);
+
 private:
-  Db database;
+  Db *database;
   Queue q;
   Song currentSong;
 };

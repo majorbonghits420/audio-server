@@ -6,10 +6,10 @@
 
 #include "server.hpp"
 
-AudioServer::AudioServer(std::string filename)
-  : database(Db(filename))
+AudioServer::AudioServer(Db *db)
+  : database(db)
 {
-  q = Queue(&database);
+  q = Queue(database);
 }
 
 void AudioServer::playVideo(std::string url) {
@@ -38,15 +38,23 @@ void AudioServer::playSong(Song s) {
 }
 
 void AudioServer::upvoteCurrentSong(void) {
-  database.updateTaste(currentSong.getUser(), true);
+  database->updateTaste(currentSong.getUser(), true);
 }
 
 void AudioServer::downvoteCurrentSong(void) {
-  database.updateTaste(currentSong.getUser(), false);
+  database->updateTaste(currentSong.getUser(), false);
 }
 
-void AudioSever::playNext(void) {
+void AudioServer::playNext(void) {
   Song next = q.pop();
   currentSong = next;
   playSong(next);
+}
+
+void AudioServer::run(void) {
+  while (!q.isEmpty()) {
+    if (!isPlaying()) {
+      playNext();
+    }
+  }
 }

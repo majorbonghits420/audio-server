@@ -13,7 +13,7 @@ AudioServer::AudioServer(Db *db)
 }
 
 void AudioServer::playVideo(std::string url) {
-  system(("cvlc -Vdummy " + url + " &").c_str());
+  system(("cvlc -Vdummy " + url + " --play-and-exit &").c_str());
 }
 
 bool AudioServer::isPlaying(void) {

@@ -17,6 +17,8 @@ public:
 
   Song pop(void);
 
+  bool isEmpty(void) { return songs.empty(); }
+
 private:
 
   Db *db;

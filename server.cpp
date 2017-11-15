@@ -46,9 +46,11 @@ void AudioServer::downvoteCurrentSong(void) {
 }
 
 void AudioServer::playNext(void) {
-  Song next = q.pop();
-  currentSong = next;
-  playSong(next);
+  if (!q.isEmpty()) {
+    Song next = q.pop();
+    currentSong = next;
+    playSong(next);
+  }
 }
 
 void AudioServer::run(void) {
@@ -59,32 +61,34 @@ void AudioServer::run(void) {
   }
 }
 
+void AudioServer::runForever(AudioServer *server) {
+  while (true) {
+    server->run();
+  }
+}
 void AudioServer::run(std::string fname) {
-    std::ifstream pipeline(fname);
-    // We make this to ensure that the fifo is always open so that we can read from it
-    std::ofstream hold(fname); // unused on purpose
-    std::string line;
-    do {
-        // Check for any commands from the FIFO
-        std::getline(pipeline, line);
-        // Check if our line is a song submission
-        std::size_t pos = line.find(";");
-        if (pos != std::string::npos) {
-            std::string user = line.substr(0, pos);
-            std::string url = line.substr(pos + 1);
-            Song newSong(url, user);
-            addSong(newSong);
-            // Upvote of the current song
-        } else if (line.compare("upvote") == 0) {
-            upvoteCurrentSong();
-            // Downvote of the current song
-        } else if (line.compare("downvote") == 0) {
-            downvoteCurrentSong();
-        }
-
-        // Play next song if the current one is done
-        if (!isPlaying()) {
-            playNext();
-        }
-    } while (!pipeline.fail() || line.compare("quit") == 0);
+  // start a thread to always be trying to pull stuff off of the queue
+  std::thread playSongs(runForever, this);
+  std::ifstream pipeline(fname);
+  // We make this to ensure that the fifo is always open so that we can read from it
+  std::ofstream hold(fname); // unused on purpose
+  std::string line;
+  do {
+    // Check for any commands from the FIFO
+    std::getline(pipeline, line);
+    // Check if our line is a song submission
+    std::size_t pos = line.find(";");
+    if (pos != std::string::npos) {
+      std::string user = line.substr(0, pos);
+      std::string url = line.substr(pos + 1);
+      Song newSong(url, user);
+      addSong(newSong);
+      // Upvote of the current song
+    } else if (line.compare("upvote") == 0) {
+      upvoteCurrentSong();
+      // Downvote of the current song
+    } else if (line.compare("downvote") == 0) {
+      downvoteCurrentSong();
+    }
+  } while (!pipeline.fail());
 }

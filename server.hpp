@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
+#include <thread>
 
 class AudioServer {
 
@@ -51,6 +52,8 @@ private:
   Db *database;
   Queue q;
   Song currentSong;
+
+  static void runForever(AudioServer *server);
 };
 
 

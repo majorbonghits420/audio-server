@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <string>
+#include <fstream>
 
 class AudioServer {
 
@@ -38,6 +39,13 @@ public:
    * queue.
    */
   void run(void);
+
+  /**
+   * This starts the server which then runs until told to stop. Commands for adding songs, voting,
+   * and quiting are sent via the fifo, which its name is passed as an argument to this function.
+   *
+   */
+  void run(std::string fname);
 
 private:
   Db *database;

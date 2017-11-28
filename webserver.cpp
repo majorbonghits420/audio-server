@@ -90,6 +90,7 @@ void Webserver::greet()
 void Webserver::upvoteSong() {
   std::string uname = username->text().toUTF8();
   std::string pass = password->text().toUTF8();
+  password->setText(Wt::WString());
   bool authed = authUser(uname, pass);
   if (authed) {
     // Write "upvote" to our fifo
@@ -101,6 +102,7 @@ void Webserver::upvoteSong() {
 void Webserver::downvoteSong() {
   std::string uname = username->text().toUTF8();
   std::string pass = password->text().toUTF8();
+  password->setText(Wt::WString());
   bool authed = authUser(uname, pass);
   if (authed) {
     pipeline << "downvote" << std::endl;
@@ -112,6 +114,7 @@ void Webserver::submitSong() {
   std::string uname = username->text().toUTF8();
   std::string pass = password->text().toUTF8();
   std::string link = url->text().toUTF8();
+  password->setText(Wt::WString());
   bool authed = authUser(uname, pass);
   if (authed) {
     // Write username and linke to our fifo
@@ -131,6 +134,7 @@ bool Webserver::authUser(std::string username, std::string pass) {
 void Webserver::createNewUser(void) {
   std::string uname = username->text().toUTF8();
   std::string pass = password->text().toUTF8();
+  password->setText(Wt::WString());
   createUser(uname, pass);
 }
 
@@ -149,22 +153,3 @@ void Webserver::createUser(std::string username, std::string pass) {
   }
   return;
 }
-
-/*
-int main(int argc, char **argv)
-{
-  std::thread capturefifo(captureInput);
-  /*
-   * Your main method may set up some shared resources, but should then
-   * start the server application (FastCGI or httpd) that starts listening
-   * for requests, and handles all of the application life cycles.
-   *
-   * The last argument to WRun specifies the function that will instantiate
-   * new application objects. That function is executed when a new user surfs
-   * to the Wt application, and after the library has negotiated browser
-   * support. The function should return a newly instantiated application
-   * object.
-   *
-  return Wt::WRun(argc, argv, &createApplication);
-}
-*/

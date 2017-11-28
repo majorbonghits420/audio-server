@@ -7,7 +7,7 @@
  * application constructor.
 */
 Webserver::Webserver(const Wt::WEnvironment& env)
-  : Wt::WApplication(env)
+  : Wt::WApplication(env), pipeline(FIFO_NAME), db(new Db(DB_NAME))
 {
   setTitle("Audio Server");                               // application title
 
@@ -56,7 +56,14 @@ Webserver::Webserver(const Wt::WEnvironment& env)
    *
    * - simple Wt-way
    */
-  linkButton->clicked().connect(this, &Webserver::greet);
+  linkButton->clicked().connect(this, &Webserver::submitSong);
+
+  upvote->clicked().connect(this, &Webserver::upvoteSong);
+
+  downvote->clicked().connect(this, &Webserver::downvoteSong);
+
+  registerButton->clicked().connect(this, &Webserver::createNewUser);
+
 
   /*
    * - using an arbitrary function object (binding values with boost::bind())
@@ -81,33 +88,35 @@ void Webserver::greet()
 }
 
 void Webserver::upvoteSong() {
-  std::string uname = username->text();
-  std::string pass = password->text();
+  std::string uname = username->text().toUTF8();
+  std::string pass = password->text().toUTF8();
   bool authed = authUser(uname, pass);
   if (authed) {
     // Write "upvote" to our fifo
     pipeline << "upvote" << std::endl;
+    response->setText("Current song downvoted");
   }
-  
 }
 
 void Webserver::downvoteSong() {
-  std::string uname = username->text();
-  std::string pass = password->text();
+  std::string uname = username->text().toUTF8();
+  std::string pass = password->text().toUTF8();
   bool authed = authUser(uname, pass);
   if (authed) {
     pipeline << "downvote" << std::endl;
+    response->setText("Current song downvoted");
   }
 }
 
-void submitSong() {
-  std::string uname = username->text();
-  std::string pass = password->text();
-  std::string link = url->text();
+void Webserver::submitSong() {
+  std::string uname = username->text().toUTF8();
+  std::string pass = password->text().toUTF8();
+  std::string link = url->text().toUTF8();
   bool authed = authUser(uname, pass);
   if (authed) {
     // Write username and linke to our fifo
     pipeline << uname << ";" << link << std::endl;
+    response->setText("Song submitted");
   }
 }
 
@@ -117,6 +126,12 @@ bool Webserver::authUser(std::string username, std::string pass) {
     return false;
   }
   return true;
+}
+
+void Webserver::createNewUser(void) {
+  std::string uname = username->text().toUTF8();
+  std::string pass = password->text().toUTF8();
+  createUser(uname, pass);
 }
 
 void Webserver::createUser(std::string username, std::string pass) {
@@ -135,17 +150,10 @@ void Webserver::createUser(std::string username, std::string pass) {
   return;
 }
 
-Wt::WApplication *createApplication(const Wt::WEnvironment& env)
-{
-  /*
-   * You could read information from the environment to decide whether
-   * the user has permission to start a new application
-   */
-  return new Webserver(env);
-}
-
+/*
 int main(int argc, char **argv)
 {
+  std::thread capturefifo(captureInput);
   /*
    * Your main method may set up some shared resources, but should then
    * start the server application (FastCGI or httpd) that starts listening
@@ -156,6 +164,7 @@ int main(int argc, char **argv)
    * to the Wt application, and after the library has negotiated browser
    * support. The function should return a newly instantiated application
    * object.
-   */
+   *
   return Wt::WRun(argc, argv, &createApplication);
 }
+*/

@@ -11,9 +11,11 @@
 #include <string>
 #include <fstream>
 #include <sqlite3.h>
+#include <thread>
 
 #include "db.hpp"
 #include "PassCheck.hpp"
+#include "Globals.hpp"
 
 class Webserver : public Wt::WApplication {
 
@@ -38,6 +40,8 @@ private:
   void downvoteSong();
 
   void submitSong();
+
+  void createNewUser(void);
 
   bool authUser(std::string username, std::string pass);
 

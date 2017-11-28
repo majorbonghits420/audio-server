@@ -94,7 +94,7 @@ void Webserver::upvoteSong() {
   if (authed) {
     // Write "upvote" to our fifo
     pipeline << "upvote" << std::endl;
-    response->setText("Current song downvoted");
+    response->setText("Current song upvoted");
   }
 }
 

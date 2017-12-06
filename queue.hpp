@@ -4,13 +4,14 @@
 #include "db.hpp"
 #include "song.hpp"
 
+#include <algorithm>
 #include <vector>
 
 class Queue {
 public:
 
   Queue();
-  
+
   Queue(Db *database);
 
   void addSong(Song s);

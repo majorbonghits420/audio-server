@@ -30,21 +30,9 @@ void Queue::updateTastes(void) {
 }
 
 void Queue::reorder(void) {
-  for (unsigned int i = 0; i < songs.size(); i++) {
-    int minTaste = songs[i].getTaste();
-    int iTaste = minTaste;
-    int minIndex = i;
-    for (unsigned int j = 1; j < songs.size(); j++) {
-      int taste = songs[j].getTaste();
-      if (taste < minTaste) {
-	minTaste = taste;
-	minIndex = j;
-      }
-    }
-    if (minTaste < iTaste) {
-      Song tmp = songs[i];
-      songs[i] = songs[minIndex];
-      songs[minIndex] = tmp;
-    }
-  }
+    updateTastes();
+    std::sort(songs.begin(), songs.end(),
+              [](Song a, Song b) -> bool {
+                  return (a.getTaste() > b.getTaste());
+              });
 }

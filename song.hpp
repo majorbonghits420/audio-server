@@ -24,7 +24,7 @@ public:
   int getTaste(void) { return taste; }
 
   void setTaste(int t) { taste = t; }
-  
+
 private:
   std::string url; /**< The submitted url */
   std::string user; /**< The username of person who submitted the url*/

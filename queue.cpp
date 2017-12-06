@@ -33,6 +33,6 @@ void Queue::reorder(void) {
     updateTastes();
     std::sort(songs.begin(), songs.end(),
               [](Song a, Song b) -> bool {
-                  return (a.getTaste() > b.getTaste());
+                  return (a.getTaste() < b.getTaste());
               });
 }

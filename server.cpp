@@ -16,6 +16,12 @@ void AudioServer::playVideo(std::string url) {
   system(("cvlc -Vdummy " + url + " --play-and-exit &").c_str());
 }
 
+void AudioServer::addSong(std::string user, std::string url) {
+    Song toAdd(url, user);
+    toAdd.setTaste(database->getTaste(user));
+    addSong(toAdd);
+}
+
 bool AudioServer::isPlaying(void) {
   std:: string cmd("ps -u pi");
   std::string data;

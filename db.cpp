@@ -20,10 +20,10 @@ Db::Db(std::string filename)
 
   // Open the database
   rc = sqlite3_open_v2(filename.c_str(),
-		       &database,
-		       SQLITE_OPEN_READWRITE,
-		       nullptr
-		       );
+                       &database,
+                       SQLITE_OPEN_READWRITE,
+                       nullptr
+                       );
 
   // If our database has not been created, we initialize it
   if (rc != 0) {
@@ -40,10 +40,10 @@ void Db::createDb(std::string filename) {
   std::cerr << "Database with name " << filename  << " not found, creating database " << std::endl;
   // Create the database
   rc = sqlite3_open_v2(filename.c_str(),
-		       &database,
-		       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-		       nullptr
-		       );
+                       &database,
+                       SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+                       nullptr
+                       );
   // Create our table for users (this databse only uses one table since info is simple)
   if (rc != 0) {
     std::cerr << "Unable to create database" << std::endl;
@@ -149,19 +149,3 @@ int Db::updateTaste(std::string uname, bool vote) {
 
   return rc;
 }
-
-// Tests for Db class
-/*
-int main() {
-  Db db("test.db");
-  db.addUser("james", "password");
-  std::cout << " Initial taste" << db.getTaste("james") << std::endl;
-  std::cout << "Taste of fake user" << db.getTaste("James") << std::endl;
-  db.updateTaste("james", true);
-  std::cout << "Taste should have incremented" <<db.getTaste("james") << std::endl;
-  db.updateTaste("james", true);
-  std::cout<< "Taste should have incremented" << db.getTaste("james") << std::endl;
-  db.updateTaste("james", false);
-  std::cout << "Taste should have decremented" << db.getTaste("james") << std::endl;
-}
-*/

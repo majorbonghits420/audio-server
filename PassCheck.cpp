@@ -24,7 +24,7 @@ namespace PassCheck {
     std::string toReturn("");
     for (unsigned int i = 0; i < str.length(); ++i) {
       if (isalpha(str[i])) {
-	toReturn += tolower(str[i]);
+        toReturn += tolower(str[i]);
       }
     }
     return toReturn;
@@ -41,7 +41,7 @@ namespace PassCheck {
       std::string word;
       fid >> word;
       if (str.compare(word) == 0 && !word.empty()) {
-	return false;
+        return false;
       }
     }
     return true;

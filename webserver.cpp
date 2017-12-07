@@ -24,7 +24,7 @@ Webserver::Webserver(const Wt::WEnvironment& env)
 
   Wt::WPushButton *registerButton = new Wt::WPushButton("Register user", root());
   registerButton->setMargin(5, Wt::Left);
-  
+
   root()->addWidget(new Wt::WBreak());
 
   root()->addWidget(new Wt::WText("URL: "));
@@ -32,7 +32,7 @@ Webserver::Webserver(const Wt::WEnvironment& env)
   url->setFocus();
 
   root()->addWidget(new Wt::WBreak());
-  
+
   Wt::WPushButton *linkButton
     = new Wt::WPushButton("Submit link", root());              // create a button
   linkButton->setMargin(5, Wt::Left);                            // add 5 pixels margin
@@ -42,7 +42,7 @@ Webserver::Webserver(const Wt::WEnvironment& env)
   root()->addWidget(new Wt::WText("Upvote or downvote current song (login credentials needed): "));
 
   root()->addWidget(new Wt::WBreak());                       // insert a line break
-  
+
   Wt::WPushButton *upvote = new Wt::WPushButton("Upvote", root());
   upvote->setMargin(5, Wt::Left);
 
@@ -63,28 +63,6 @@ Webserver::Webserver(const Wt::WEnvironment& env)
   downvote->clicked().connect(this, &Webserver::downvoteSong);
 
   registerButton->clicked().connect(this, &Webserver::createNewUser);
-
-
-  /*
-   * - using an arbitrary function object (binding values with boost::bind())
-   */
-  username->enterPressed().connect
-    (boost::bind(&Webserver::greet, this));
-
-  /*
-   * - using a c++0x lambda:
-   */
-  // b->clicked().connect(std::bind([=]() { 
-  //       response_->setText("Hello there, " + nameEdit_->text());
-  // }));
-}
-
-void Webserver::greet()
-{
-  /*
-   * Update the text, using text input into the nameEdit_ field.
-   */
-  response->setText("Hello there, " + username->text() + password->text() + url->text());
 }
 
 void Webserver::upvoteSong() {
